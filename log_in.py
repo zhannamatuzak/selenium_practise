@@ -8,6 +8,10 @@ driver = webdriver.Chrome()
 # Configure environment variables within PyCharm to use secret keys
 username = os.environ["BS_USERNAME"]
 password = os.environ["BS_PASSWORD"]
+# To verify the environment variables are correctly loaded,
+# execute in the console:
+# print(os.environ.get("BS_USERNAME"))
+# print(os.environ.get("BS_PASSWORD"))
 
 
 # opens the login area
