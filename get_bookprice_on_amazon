@@ -1,0 +1,54 @@
+import time
+from selenium.webdriver.chrome.service import Service  # start and stop the ChromeDriver, not absolute path
+from selenium.webdriver.chrome.options import Options  # configure and customize the behavior of the Chrome browser
+from webdriver_manager.chrome import ChromeDriverManager  # manage drivers for different browsers
+from selenium.webdriver.common.by import By
+from selenium import webdriver
+
+options = Options()
+options.add_experimental_option("detach", True)
+
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+driver.get("http://www.neuralnine.com/")
+driver.maximize_window()
+
+# find all links
+links = driver.find_elements(By.XPATH, "//a[@href]")
+# pick the link that contains the text "Books"
+for link in links:
+    # print(link.get_attribute("innerHTML"))
+    if "Books" in link.get_attribute("innerHTML"):
+        link.click()
+        break
+
+# path from the video => didn't work
+# book_links = driver.find_elements(By.XPATH, "//div[contains(@class, 'elementor-column-wrap')][.//h2[(text()[contains(., '7 IN 1')]]][count(.//a)=2]//a")
+# my corrected version / took a while to solve
+book_links = driver.find_elements(By.XPATH, "//div[contains(@class, 'elementor-column-wrap')][.//h2[contains(text(), '7 IN 1')]][count(.//a)=2]//a")
+
+# find two links in the container (a) / check if there are to find
+# for book_link in book_links:
+#      print(book_link.get_attribute("href"))
+
+# click the first link (Amazon button)
+book_links[0].click()
+
+# switch to the second tag
+driver.switch_to.window(driver.window_handles[1])
+
+time.sleep(3)
+
+# I could not get why the guy on the video use find_elements & iterates through buttons
+# because there is the only button with this value
+# so, I rewrote the code lines & it returns the same result
+button = driver.find_element(By.XPATH, "//a[.//span[contains(text(), 'Paperback')]]//span[contains(text(), '$')]")
+button_value = button.get_attribute('innerHTML').replace("&nbsp;", " ")
+print(f"Button Value: {button_value}")
+
+# here is the option from the guy on the video
+# can try to write "Kindle" instead of "Paperback"
+# buttons = driver.find_elements(By.XPATH, "//a[.//span[contains(text(), 'Paperback')]]//span[contains(text(), '$')]")
+# return the value of all buttons (in this case only one) / see the results in console / my: "$32.75 - $39.99"
+# for button in buttons:
+#    print(button.get_attribute("innerHTML").replace("&nbsp;", ""))
